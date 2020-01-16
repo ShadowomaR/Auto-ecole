@@ -1,4 +1,13 @@
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JOptionPane;
+
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -33,9 +42,9 @@ public class login extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jPasswordField1 = new javax.swing.JPasswordField();
+        erreurs = new javax.swing.JLabel();
+        user = new javax.swing.JTextField();
+        pwd = new javax.swing.JPasswordField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         l1 = new javax.swing.JLabel();
@@ -85,19 +94,18 @@ public class login extends javax.swing.JFrame {
         jLabel2.setText("Nom utilisateur :");
         jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, -1, 30));
 
-        jLabel3.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(255, 0, 0));
-        jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("Erreur utilisateur ou mot pass incorrect");
-        jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, 280, 30));
+        erreurs.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        erreurs.setForeground(new java.awt.Color(255, 0, 0));
+        erreurs.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jPanel4.add(erreurs, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 110, 280, 30));
 
-        jTextField1.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
-        jTextField1.setToolTipText("Nom utilisateur ou email");
-        jPanel4.add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 180, 30));
+        user.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        user.setToolTipText("Nom utilisateur ou email");
+        jPanel4.add(user, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 20, 180, 30));
 
-        jPasswordField1.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
-        jPasswordField1.setToolTipText("Mot pass");
-        jPanel4.add(jPasswordField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 70, 180, 30));
+        pwd.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        pwd.setToolTipText("Mot pass");
+        jPanel4.add(pwd, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 70, 180, 30));
 
         jButton1.setBackground(new java.awt.Color(204, 255, 255));
         jButton1.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
@@ -112,6 +120,11 @@ public class login extends javax.swing.JFrame {
         jButton2.setBackground(new java.awt.Color(204, 255, 255));
         jButton2.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         jButton2.setText("Connecter");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jPanel4.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 220, -1, -1));
 
         l1.setBackground(new java.awt.Color(255, 204, 51));
@@ -134,6 +147,14 @@ public class login extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        if(ConBD.getConnection()!=null){
+            if (!user.getText().isEmpty() && !pwd.getText().isEmpty()){                
+                authentification(user.getText(),pwd.getText());
+            }else erreurs.setText("Remplisser les donners");
+        }else erreurs.setText("Connection avec la base échouer");
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -171,19 +192,52 @@ public class login extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel erreurs;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPasswordField jPasswordField1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel l1;
+    private javax.swing.JPasswordField pwd;
+    private javax.swing.JTextField user;
     // End of variables declaration//GEN-END:variables
+
+    private void authentification(String username, String password) {
+        utilisateurs u=get_user(username,password);
+        if(u!=null){
+            connect(u.getID());
+        }else erreurs.setText("Nom utilisateur ou mot pass incorrect");
+    }
+    public utilisateurs get_user(String username, String password){    
+        utilisateurs u=null;
+        try {            
+            Statement st = ConBD.getConnection().createStatement();
+            String q="select * from utilisateur where (nom_util='"+username+"' or email='"+username+"') and pw='"+password+"'";            
+            ResultSet rs = st.executeQuery(q);                        
+            while(rs.next())
+            {
+                u = new utilisateurs(rs.getInt("num"),rs.getString("nom"),rs.getString("prenom"),rs.getString("nom_util"),rs.getString("email"),rs.getString("type"),rs.getString("pw"),"");               
+            }     
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(rootPane,"ERREU :"+ex);
+        }        
+        return u;                 
+}
+
+    private void connect(int id) {
+        try { 
+            String Query = "INSERT INTO `connections`(`user`,`etat`) VALUES ("+id+",1)";
+            PreparedStatement ps = ConBD.getConnection().prepareStatement(Query);
+            ps.executeUpdate();
+            main_fram f=new main_fram();
+            f.setVisible(true);
+            this.dispose();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }  
+    }
 }
