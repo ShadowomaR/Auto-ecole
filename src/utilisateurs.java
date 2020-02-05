@@ -10,12 +10,7 @@
  */
 public class utilisateurs {
     private int id ;
-    private String nom;
-    private String prenom;
-    private String email;
-    private String nom_utilitateur;
-    private String type;
-    private String pwd;
+    private String nom,prenom,email,nom_utilitateur,type,pwd;
     private String photo;
     public utilisateurs(int id,String nom,String prenom,String nom_utilitateur,String email,String type,String pwd,String photo){
         this.id=id;

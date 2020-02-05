@@ -3,8 +3,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import javax.swing.JOptionPane;
 
 
@@ -150,9 +148,10 @@ public class login extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if(ConBD.getConnection()!=null){
-            if (!user.getText().isEmpty() && !pwd.getText().isEmpty()){                
+            /*if (!user.getText().isEmpty() && !pwd.getText().isEmpty()){                
                 authentification(user.getText(),pwd.getText());
-            }else erreurs.setText("Remplisser les donners");
+            }else erreurs.setText("Remplisser les donners");*/
+            authentification("user","user");
         }else erreurs.setText("Connection avec la base échouer");
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -209,7 +208,7 @@ public class login extends javax.swing.JFrame {
     private void authentification(String username, String password) {
         utilisateurs u=get_user(username,password);
         if(u!=null){
-            connect(u.getID());
+            connect(u);
         }else erreurs.setText("Nom utilisateur ou mot pass incorrect");
     }
     public utilisateurs get_user(String username, String password){    
@@ -228,12 +227,12 @@ public class login extends javax.swing.JFrame {
         return u;                 
 }
 
-    private void connect(int id) {
+    private void connect(utilisateurs u) {
         try { 
-            String Query = "INSERT INTO `connections`(`user`,`etat`) VALUES ("+id+",1)";
+            String Query = "INSERT INTO `connections`(`user`,`etat`) VALUES ("+u.getID()+",1)";
             PreparedStatement ps = ConBD.getConnection().prepareStatement(Query);
             ps.executeUpdate();
-            main_fram f=new main_fram();
+            main_fram f=new main_fram(u);
             f.setVisible(true);
             this.dispose();
         } catch (SQLException e) {

@@ -1,3 +1,11 @@
+
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import javax.swing.JComponent;
+import javax.swing.JOptionPane;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -9,12 +17,19 @@
  * @author SHADOW
  */
 public class main_fram extends javax.swing.JFrame {
-
+    private final utilisateurs u;
+    private final GridBagLayout grid=new GridBagLayout();
+    private final GridBagConstraints c=new GridBagConstraints();
     /**
      * Creates new form main_fram
+     * @param u
      */
-    public main_fram() {
+    public main_fram(utilisateurs u) {
         initComponents();
+        this.u=u;
+        main_pan.setLayout(grid);
+        c.gridx=0;
+        c.gridy=0;
     }
 
     /**
@@ -27,12 +42,12 @@ public class main_fram extends javax.swing.JFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
+        main_pan = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -46,19 +61,26 @@ public class main_fram extends javax.swing.JFrame {
         });
         getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1290, 0, -1, -1));
 
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 150, 130, 120));
-
         jButton2.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         jButton2.setText("jButton2");
         getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 0, -1, 50));
 
         jButton3.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         jButton3.setText("Agenda");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
         getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 80, 50));
 
         jButton4.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
-        jButton4.setText("jButton2");
+        jButton4.setText("Candidat");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
         getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 0, -1, 50));
 
         jButton5.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
@@ -69,48 +91,31 @@ public class main_fram extends javax.swing.JFrame {
         jButton6.setText("jButton2");
         getContentPane().add(jButton6, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 0, -1, 50));
 
+        main_pan.setBackground(new java.awt.Color(204, 255, 204));
+        main_pan.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        getContentPane().add(main_pan, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 50, 1350, 660));
+
         setSize(new java.awt.Dimension(1350, 710));
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        System.exit(0);
+        deconnect();
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(main_fram.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(main_fram.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(main_fram.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(main_fram.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        /*main_pan.removeAll();
+        main_pan.setVisible(false);
+        agenda_panel p=new agenda_panel();
+        p.setVisible(true);
+        main_pan.add(p,c);
+        main_pan.setVisible(true);*/
+        change_panel(new agenda_panel());
+    }//GEN-LAST:event_jButton3ActionPerformed
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new main_fram().setVisible(true);
-            }
-        });
-    }
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        change_panel(new candidat_panel());
+    }//GEN-LAST:event_jButton4ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
@@ -119,6 +124,27 @@ public class main_fram extends javax.swing.JFrame {
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel main_pan;
     // End of variables declaration//GEN-END:variables
+    
+    private void deconnect() {
+        try { 
+            String Query = "INSERT INTO `connections`(`user`,`etat`) VALUES ("+u.getID()+",0)";
+            PreparedStatement ps = ConBD.getConnection().prepareStatement(Query);
+            ps.executeUpdate();
+            System.exit(0);            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(rootPane, e);
+        }  
+    }
+    private void change_panel(JComponent p){
+        main_pan.removeAll();
+        main_pan.setVisible(false);
+        p.setVisible(true);
+        main_pan.add(p,c);
+        main_pan.setVisible(true);
+        main_pan.revalidate();
+    }
+     
+    
 }
