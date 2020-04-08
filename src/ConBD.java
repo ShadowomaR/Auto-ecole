@@ -1,4 +1,5 @@
 
+import java.awt.Color;
 import java.sql.*;
 import javax.swing.JOptionPane;
 /*
@@ -12,15 +13,19 @@ import javax.swing.JOptionPane;
  * @author OMAR
  */
 public class ConBD {
+    public static Color color;
     public ConBD(){}
     public static final Connection getConnection(){
         Connection con = null;        
         try {
-            con = DriverManager.getConnection("jdbc:mysql://localhost/autoecole","root","");              
-            return con;
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/autoecole?autoReconnect=true&useSSL=false","root","");              
+            load_param();
         } catch (SQLException ex) {  
             JOptionPane.showMessageDialog(null,"ERREU des connextion avec la base de donner");
-            return null;
         }
+        return con;
+    }
+    public static final void load_param(){
+        color=Color.MAGENTA;
     }
 }

@@ -1,5 +1,31 @@
 
-
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import javax.imageio.ImageIO;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,13 +39,25 @@
  */
 public class agenda_panel extends javax.swing.JPanel {
 
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    ArrayList<candidat> c;
+    private int code=0;
+    private Statement st;
+    private ResultSet rs;
+    
     /**
-     * Creates new form agenda_panel
+     * Creates new form NewJPanel
      */
     public agenda_panel() {
         initComponents();
-        pan_inside.add(new add_agenda_panel());
-        pan_inside.add(new add_agenda_panel1());
+        load_event(date_picker.getDate());
+        date_picker.getDateEditor().addPropertyChangeListener((PropertyChangeEvent e) -> {
+            if ("date".equals(e.getPropertyName())) {
+                load_event(date_picker.getDate());
+                //JOptionPane.showMessageDialog(date_picker,e.getPropertyName()+ " : " + (Date) e.getNewValue());
+            }
+        });
+        load_candidat("");  
     }
 
     /**
@@ -31,24 +69,369 @@ public class agenda_panel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        scroll = new javax.swing.JScrollPane();
-        pan_inside = new javax.swing.JPanel();
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        Profile = new javax.swing.JMenuItem();
+        modifier = new javax.swing.JMenuItem();
+        jLabel1 = new javax.swing.JLabel();
+        pan = new javax.swing.JPanel();
+        date_picker = new com.toedter.calendar.JDateChooser();
+        jPanel1 = new javax.swing.JPanel();
+        dat_s = new com.toedter.calendar.JDateChooser();
+        type = new javax.swing.JComboBox<>();
+        jButton1 = new javax.swing.JButton();
+        info = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        temp = new javax.swing.JComboBox<>();
+        jLabel4 = new javax.swing.JLabel();
+        cherch = new javax.swing.JTextField();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        tabl = new javax.swing.JTable();
 
-        setBackground(new java.awt.Color(153, 51, 0));
-        setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        Profile.setText("Profile");
+        Profile.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                ProfileMousePressed(evt);
+            }
+        });
+        jPopupMenu1.add(Profile);
+
+        modifier.setText("Modifier");
+        modifier.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                modifierMousePressed(evt);
+            }
+        });
+        jPopupMenu1.add(modifier);
+
+        setBackground(ConBD.color);
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 760, 30, 10));
 
-        pan_inside.setBackground(new java.awt.Color(153, 51, 0));
-        pan_inside.setLayout(new java.awt.GridLayout(2, 1));
-        scroll.setViewportView(pan_inside);
+        pan.setBackground(new Color(0, 0, 0, 0)
+        );
 
-        add(scroll, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1350, 660));
+        javax.swing.GroupLayout panLayout = new javax.swing.GroupLayout(pan);
+        pan.setLayout(panLayout);
+        panLayout.setHorizontalGroup(
+            panLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1220, Short.MAX_VALUE)
+        );
+        panLayout.setVerticalGroup(
+            panLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 500, Short.MAX_VALUE)
+        );
+
+        add(pan, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 80, 1220, 500));
+
+        date_picker.setDate(new Date());
+        date_picker.setDateFormatString("dd-MMMM-yyyy");
+        date_picker.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        add(date_picker, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 30, 190, 28));
+
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        dat_s.setDate(new Date());
+        dat_s.setDateFormatString("dd-MM-yyyy");
+        jPanel1.add(dat_s, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 30, 190, 30));
+
+        type.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        type.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Code", "Creno", "Cercuit" }));
+        type.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                typeActionPerformed(evt);
+            }
+        });
+        jPanel1.add(type, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 30, 90, 30));
+
+        jButton1.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jButton1.setText("Ajouter");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(950, 30, 80, 30));
+
+        info.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
+        jPanel1.add(info, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, 350, 30));
+
+        jLabel2.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel2.setText("Heur :");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 30, 40, 30));
+
+        jLabel3.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel3.setText("Type :");
+        jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 30, 50, 30));
+
+        temp.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        temp.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "8", "9", "10", "11", "13", "14", "15", "16" }));
+        temp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tempActionPerformed(evt);
+            }
+        });
+        jPanel1.add(temp, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 30, 90, 30));
+
+        jLabel4.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel4.setText("Date :");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 30, 40, 30));
+
+        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 620, 1060, 80));
+
+        cherch.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
+        cherch.setForeground(new java.awt.Color(0, 0, 51));
+        cherch.setToolTipText("");
+        cherch.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                cherchKeyReleased(evt);
+            }
+        });
+        add(cherch, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 720, 520, 40));
+
+        tabl.setAutoCreateRowSorter(true);
+        tabl.setBackground(new java.awt.Color(204, 204, 204));
+        tabl.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        tabl.setForeground(new java.awt.Color(0, 0, 51));
+        tabl.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "NOM", "PRENOM", "DATE NAISSENCE", "LIEU NAISSENCE", "GENRE", "GROUPAGE", "DATE INCRIPTION", "TELEPHONE", "ADDRESSE", "TYPE PERMIS", "ETAT"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tabl.setSelectionBackground(new java.awt.Color(241, 179, 205));
+        tabl.setSelectionForeground(new java.awt.Color(102, 0, 0));
+        tabl.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tablMousePressed(evt);
+            }
+        });
+        jScrollPane6.setViewportView(tabl);
+
+        add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 780, 1290, 410));
     }// </editor-fold>//GEN-END:initComponents
+
+    private void ProfileMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ProfileMousePressed
+        
+    }//GEN-LAST:event_ProfileMousePressed
+
+    private void modifierMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_modifierMousePressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_modifierMousePressed
+
+    private void typeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_typeActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        add_agenda();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void tempActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tempActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tempActionPerformed
+
+    private void cherchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cherchKeyReleased
+        load_candidat(cherch.getText());
+    }//GEN-LAST:event_cherchKeyReleased
+
+    private void tablMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tablMousePressed
+        display_info(tabl.getSelectedRow());
+    }//GEN-LAST:event_tablMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel pan_inside;
-    private javax.swing.JScrollPane scroll;
+    private javax.swing.JMenuItem Profile;
+    private javax.swing.JTextField cherch;
+    private com.toedter.calendar.JDateChooser dat_s;
+    private com.toedter.calendar.JDateChooser date_picker;
+    private javax.swing.JLabel info;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPopupMenu jPopupMenu1;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JMenuItem modifier;
+    private javax.swing.JPanel pan;
+    private javax.swing.JTable tabl;
+    private javax.swing.JComboBox<String> temp;
+    private javax.swing.JComboBox<String> type;
     // End of variables declaration//GEN-END:variables
 
+    
+    private void load_event(Date d) {
+        
+        pan.removeAll();
+        String addDate = dateFormat.format(d);
+        ArrayList<agenda> agendaList  = new ArrayList<>();
+        pan.setLayout(new BoxLayout(pan, BoxLayout.X_AXIS));
+        int temp=8;
+        JLabel l;
+        JPanel b;
+        JButton btn;
+        Font f=new Font("Trebuchet MS", 1, 12);
+        Color transparent=new Color(0, 0, 0, 0);
+        Border bordr=new EmptyBorder(10, 2, 10, 2);       
+        
+        for (int i = 0; i < 9; i++) {
+            b = new JPanel(new BorderLayout(10,10));            
+            if(i!=4){
+                b.setBackground(Color.white);
+                b.setAutoscrolls(true);
+                agendaList = get_agenda(addDate,agendaList,temp+i);
+                if (agendaList!=null ) {                    
+                    DefaultListModel<String> l1 = null;
+                    for(int j=0;j<agendaList.size();j++){                        
+                        l1 = new DefaultListModel<>();  
+                        l1.addElement(agendaList.get(j).getnom()); 
+                    }
+                    if(l1!=null){
+                        JList<String> list = new JList<>(l1);
+                        list.setBounds(100,100, 75,75); 
+                        b.add(list,BorderLayout.CENTER);
+                    }
+                    
+                }                
+                l=new JLabel(Integer.toString(temp+i)+" - "+Integer.toString(temp+i+1));
+                l.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+                l.setBackground(Color.red);
+                l.setFont(f);
+                l.setBorder(bordr);
+                b.add(l,BorderLayout.NORTH);   
+            }else{
+                b.setBackground(transparent);
+            }
+            pan.add(b);
+            pan.add(Box.createHorizontalStrut(10));
+        }
+        pan.revalidate();
+    }
+    private ArrayList<agenda> get_agenda(String d, ArrayList<agenda> a, int par){
+        a.removeAll(a);
+        try {            
+            rs = request("select code_c,nom,prenom,type,tmp from agenda, candidat where code=code_c and jour='"+d+"' and tmp="+par+"");
+            agenda b;
+            while(rs.next())
+            {
+                b=new agenda(rs.getInt("code_c"),rs.getString("nom")+" "+rs.getString("prenom"),rs.getString("type"),rs.getInt("tmp"));
+                a.add(b);
+            }     
+        } catch (SQLException  ex) {
+            JOptionPane.showMessageDialog(pan,"ERREU :"+ex);
+        }   
+        return a;
+    }
+        private void load_candidat(String string) {
+        DefaultTableModel model = (DefaultTableModel)tabl.getModel();
+        c=get_candidat(string);
+        model.setRowCount(0);
+        Object[] row = new Object[11];
+        for(int i = 0; i < c.size(); i++)
+        {
+            row[0] = c.get(i).getNOM();
+            row[1] = c.get(i).getPrenom();
+            row[2] = c.get(i).getDate_n();
+            row[3] = c.get(i).getLieu();
+            row[4] = c.get(i).getgenre();
+            row[5] = c.get(i).getGroupage();
+            row[6] = c.get(i).getDate_i();
+            row[7] = c.get(i).getTél();
+            row[8] = c.get(i).getadress();
+            row[9] = c.get(i).gettype();
+            row[10] = c.get(i).getetat();
+            model.addRow(row);
+        }
+    }
+    private ArrayList<candidat> get_candidat(String d){
+        ArrayList<candidat> c1=new ArrayList<>();
+        try {            
+            String q;
+            if("".equals(d)) q="select * from candidat order by date_inscri desc";
+            else q="select * from candidat where nom like '%"+d+"%' or prenom like '%"+d+"%' order by date_inscri desc";
+            rs = request(q);
+            candidat b;
+            InputStream photo ;
+            BufferedImage bfim = null;
+            while(rs.next())
+            {
+                if(rs.getBinaryStream("photo")!=null){
+                    photo = rs.getBinaryStream("photo");
+                    try {
+                        bfim=ImageIO.read(photo);
+                    } catch (IOException ex) {
+                        System.err.println(ex);
+                    }
+                }
+                b=new candidat(rs.getInt("code"),rs.getString("nom"),rs.getString("prenom"),rs.getDate("date_n"),rs.getString("lieu_n"),rs.getString("groupage"),rs.getString("sexe"),rs.getString("tel"), rs.getString("adress"),rs.getDate("date_inscri"),rs.getString("type_p"),rs.getString("etat"),new ImageIcon(bfim));
+                c1.add(b);
+            }          
+        } catch (SQLException  ex) {
+            JOptionPane.showMessageDialog(jPanel1,"ERREU :"+ex);
+        }   
+        return c1;
+    }
+
+    private void display_info(int i) {
+        code=c.get(i).getCode();
+        info.setText(c.get(i).getNOM()+" "+c.get(i).getPrenom());
+    }
+    private void add_agenda(){
+        if(code!=0 && check()==0){
+            String UpdateQuery = "INSERT INTO `agenda`(code_c, jour, tmp, type) VALUES ("+code+",'"+dateFormat.format(dat_s.getDate())+"','"+temp.getSelectedItem()+"','"+type.getSelectedItem()+"')";
+            update(UpdateQuery);
+            load_candidat("");
+            clear();
+            JOptionPane.showMessageDialog(pan, "Ajouter");
+            load_event(date_picker.getDate());   
+        }
+    }
+
+    private int check() {
+        String q="select * from agenda where code_c="+code+" and jour='"+dateFormat.format(dat_s.getDate())+"' and tmp="+temp.getSelectedItem();
+        try {
+            return request(q).getFetchSize();
+        } catch (SQLException ex) {
+            return 1;
+        }
+    }
+
+    private void clear() {
+        info.setText("");
+        code=0;
+        dat_s.setDate(new Date());
+        type.setSelectedIndex(0);
+        temp.setSelectedIndex(0);
+    }
+    private ResultSet request(String q) {
+        try {            
+            st = ConBD.getConnection().createStatement();
+            return st.executeQuery(q);
+        } catch (SQLException  ex) {
+            JOptionPane.showMessageDialog(info,"ERREU :"+ex);
+        }   
+        return null;
+    }
+    private void update(String q){
+        try {
+                PreparedStatement ps = ConBD.getConnection().prepareStatement(q);
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(info, e);
+            }   
+    }
 }
+
+

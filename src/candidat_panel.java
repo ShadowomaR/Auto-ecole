@@ -1,4 +1,10 @@
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -6,7 +12,11 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -22,13 +32,21 @@ import javax.swing.table.DefaultTableModel;
 public class candidat_panel extends javax.swing.JPanel {
     
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    ArrayList<candidat> c;
+    private ArrayList<candidat> c;
+    private ImageIcon curent_image;
+    private String curent_url,resource;
+    public static candidat can=null;
+    private profile pro=null;
     /**
      * Creates new form NewJPanel
      */
     public candidat_panel() {
         initComponents();
         load_candidat("");
+        resource="/Images/icons8-52.png";
+        curent_image=new ImageIcon(getClass().getResource(resource));
+        curent_url=curent_image.toString().replace("file:/", "");
+        image.setIcon(curent_image);
     }
 
     /**
@@ -66,8 +84,8 @@ public class candidat_panel extends javax.swing.JPanel {
         adress = new javax.swing.JTextField();
         type_p = new javax.swing.JComboBox<>();
         jLabel10 = new javax.swing.JLabel();
-        jPanel1 = new javax.swing.JPanel();
         modifer = new javax.swing.JButton();
+        image = new javax.swing.JLabel();
         jScrollPane6 = new javax.swing.JScrollPane();
         tabl = new javax.swing.JTable();
         cherch = new javax.swing.JTextField();
@@ -89,11 +107,11 @@ public class candidat_panel extends javax.swing.JPanel {
         });
         jPopupMenu1.add(modifier);
 
-        setBackground(new java.awt.Color(153, 51, 0));
+        setBackground(ConBD.color);
         setAutoscrolls(true);
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        can_info_pan.setBackground(new java.awt.Color(204, 204, 204));
+        can_info_pan.setBackground(new java.awt.Color(226, 226, 226));
         can_info_pan.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED)), "INFORMATION", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Consolas", 1, 14), new java.awt.Color(102, 0, 0))); // NOI18N
         can_info_pan.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -104,8 +122,11 @@ public class candidat_panel extends javax.swing.JPanel {
         can_info_pan.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 60, 30));
 
         nom.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        nom.setToolTipText("Nom");
         nom.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        nom.setName(""); // NOI18N
         can_info_pan.add(nom, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 30, 180, 30));
+        nom.getAccessibleContext().setAccessibleName("Nom");
 
         jLabel2.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(51, 0, 102));
@@ -179,7 +200,7 @@ public class candidat_panel extends javax.swing.JPanel {
         group.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "A+", "A-", "AB+", "AB-", "B+", "B-", "O+", "O-" }));
         can_info_pan.add(group, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 30, 90, 30));
 
-        vider.setFont(new java.awt.Font("Vani", 1, 12)); // NOI18N
+        vider.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         vider.setForeground(new java.awt.Color(0, 0, 51));
         vider.setText("VIDER");
         vider.setToolTipText("");
@@ -190,7 +211,7 @@ public class candidat_panel extends javax.swing.JPanel {
         });
         can_info_pan.add(vider, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 110, 120, 30));
 
-        ajouter.setFont(new java.awt.Font("Vani", 1, 12)); // NOI18N
+        ajouter.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         ajouter.setForeground(new java.awt.Color(0, 0, 51));
         ajouter.setText("AJOUTER");
         ajouter.setToolTipText("");
@@ -203,7 +224,7 @@ public class candidat_panel extends javax.swing.JPanel {
 
         jLabel14.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         jLabel14.setForeground(new java.awt.Color(51, 0, 102));
-        jLabel14.setText("ADRESS *:");
+        jLabel14.setText("ADRESS * :");
         jLabel14.setToolTipText("");
         can_info_pan.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 110, 60, 30));
 
@@ -226,15 +247,10 @@ public class candidat_panel extends javax.swing.JPanel {
         jLabel10.setToolTipText("");
         can_info_pan.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 70, 60, 30));
 
-        jPanel1.setBackground(new java.awt.Color(153, 153, 153));
-        jPanel1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        can_info_pan.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 30, 110, 110));
-
-        modifer.setFont(new java.awt.Font("Vani", 1, 12)); // NOI18N
+        modifer.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         modifer.setForeground(new java.awt.Color(0, 0, 51));
-        modifer.setText("Modifier");
+        modifer.setText("ENGERISTRER");
         modifer.setToolTipText("");
-        modifer.setEnabled(false);
         modifer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 modiferActionPerformed(evt);
@@ -242,11 +258,19 @@ public class candidat_panel extends javax.swing.JPanel {
         });
         can_info_pan.add(modifer, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 110, 120, 30));
 
-        add(can_info_pan, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 20, 1230, 170));
+        image.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        image.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        image.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                imageMousePressed(evt);
+            }
+        });
+        can_info_pan.add(image, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 30, 100, 100));
+
+        add(can_info_pan, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 10, 1230, 160));
 
         tabl.setAutoCreateRowSorter(true);
-        tabl.setBackground(new java.awt.Color(204, 204, 204));
-        tabl.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        tabl.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
         tabl.setForeground(new java.awt.Color(0, 0, 51));
         tabl.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -265,8 +289,11 @@ public class candidat_panel extends javax.swing.JPanel {
             }
         });
         tabl.setComponentPopupMenu(jPopupMenu1);
-        tabl.setSelectionBackground(new java.awt.Color(241, 179, 205));
-        tabl.setSelectionForeground(new java.awt.Color(102, 0, 0));
+        tabl.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        tabl.setGridColor(new java.awt.Color(153, 255, 153));
+        tabl.setRowHeight(20);
+        tabl.setSelectionBackground(new java.awt.Color(204, 255, 255));
+        tabl.setSelectionForeground(new java.awt.Color(0, 0, 51));
         jScrollPane6.setViewportView(tabl);
         if (tabl.getColumnModel().getColumnCount() > 0) {
             tabl.getColumnModel().getColumn(0).setResizable(false);
@@ -286,7 +313,7 @@ public class candidat_panel extends javax.swing.JPanel {
             tabl.getColumnModel().getColumn(10).setPreferredWidth(50);
         }
 
-        add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 270, 1290, 370));
+        add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 1330, 410));
 
         cherch.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
         cherch.setForeground(new java.awt.Color(0, 0, 51));
@@ -296,7 +323,7 @@ public class candidat_panel extends javax.swing.JPanel {
                 cherchKeyReleased(evt);
             }
         });
-        add(cherch, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 210, 520, 40));
+        add(cherch, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 180, 520, 40));
         add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 650, 30, 10));
     }// </editor-fold>//GEN-END:initComponents
 
@@ -309,11 +336,18 @@ public class candidat_panel extends javax.swing.JPanel {
     }//GEN-LAST:event_adressActionPerformed
 
     private void ProfileMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ProfileMousePressed
-        JOptionPane.showMessageDialog(can_info_pan, evt);
+        
+        if(pro==null || !pro.isVisible()){
+            can=c.get(tabl.getSelectedRow());
+            pro=new profile();
+            pro.setVisible(true);
+        }else JOptionPane.showMessageDialog(can_info_pan, "Fermer la fenetre");
+        
     }//GEN-LAST:event_ProfileMousePressed
 
     private void ajouterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterActionPerformed
-        insert_candidat();
+        if(ajouter.getText().equals("Ajouter")) insert_candidat();
+        else modifier();
     }//GEN-LAST:event_ajouterActionPerformed
 
     private void cherchKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_cherchKeyReleased
@@ -321,12 +355,30 @@ public class candidat_panel extends javax.swing.JPanel {
     }//GEN-LAST:event_cherchKeyReleased
 
     private void modiferActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modiferActionPerformed
-       modifier();
+        Enregistrer();
     }//GEN-LAST:event_modiferActionPerformed
 
     private void modifierMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_modifierMousePressed
-        //remplir(evt.getComponent().);
+        ajouter.setText("Modifier");
+        afficher_info(tabl.getSelectedRow());
     }//GEN-LAST:event_modifierMousePressed
+
+    private void imageMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imageMousePressed
+        JFileChooser r=new JFileChooser();
+            r.setCurrentDirectory(r.getFileSystemView().getHomeDirectory());
+            r.setFileSelectionMode(JFileChooser.FILES_ONLY);
+            r.addChoosableFileFilter(new FileNameExtensionFilter("Images","png","jpeg"));
+            r.setAcceptAllFileFilterUsed(true);
+            int result = r.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                curent_url=r.getSelectedFile().getAbsolutePath();
+                ImageIcon newIcon = new ImageIcon(r.getSelectedFile().getAbsolutePath());
+                Image img = newIcon.getImage();
+                Image newimg = img.getScaledInstance(image.getWidth(), image.getHeight(),  java.awt.Image.SCALE_AREA_AVERAGING);
+                curent_image = new ImageIcon(newimg);
+                image.setIcon(curent_image);
+            }
+    }//GEN-LAST:event_imageMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -339,6 +391,7 @@ public class candidat_panel extends javax.swing.JPanel {
     private com.toedter.calendar.JDateChooser date_n;
     private javax.swing.JComboBox<String> genr;
     private javax.swing.JComboBox<String> group;
+    private javax.swing.JLabel image;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel14;
@@ -350,7 +403,6 @@ public class candidat_panel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JTextField lieu;
@@ -368,7 +420,7 @@ public class candidat_panel extends javax.swing.JPanel {
         DefaultTableModel model = (DefaultTableModel)tabl.getModel();
         c=get_candidat(string);
         model.setRowCount(0);
-        Object[] row = new Object[10];
+        Object[] row = new Object[11];
         for(int i = 0; i < c.size(); i++)
         {
             row[0] = c.get(i).getNOM();
@@ -381,7 +433,7 @@ public class candidat_panel extends javax.swing.JPanel {
             row[7] = c.get(i).getTél();
             row[8] = c.get(i).getadress();
             row[9] = c.get(i).gettype();
-            
+            row[10] = c.get(i).getetat();
             model.addRow(row);
         }
     }
@@ -394,9 +446,19 @@ public class candidat_panel extends javax.swing.JPanel {
             else q="select * from candidat where nom like '%"+d+"%' or prenom like '%"+d+"%' order by date_inscri desc";
             ResultSet rs = st.executeQuery(q);
             candidat b;
+            InputStream photo ;
+            BufferedImage bfim = null;
             while(rs.next())
             {
-                b=new candidat(rs.getInt("code"),rs.getString("nom"),rs.getString("prenom"),rs.getDate("date_n"),rs.getString("lieu_n"),rs.getString("groupage"),rs.getString("sexe"),rs.getString("tel"), rs.getString("adress"),rs.getDate("date_inscri"),rs.getString("type_p"),rs.getString("etat"));
+                if(rs.getBinaryStream("photo")!=null){
+                    photo = rs.getBinaryStream("photo");
+                    try {
+                        bfim=ImageIO.read(photo);
+                    } catch (IOException ex) {
+                        System.err.println(ex);
+                    }
+                }
+                b=new candidat(rs.getInt("code"),rs.getString("nom"),rs.getString("prenom"),rs.getDate("date_n"),rs.getString("lieu_n"),rs.getString("groupage"),rs.getString("sexe"),rs.getString("tel"), rs.getString("adress"),rs.getDate("date_inscri"),rs.getString("type_p"),rs.getString("etat"),new ImageIcon(bfim));
                 c1.add(b);
             }     
         } catch (SQLException  ex) {
@@ -408,7 +470,7 @@ public class candidat_panel extends javax.swing.JPanel {
     private void insert_candidat() {
         if(check1() && check2()==0){
             try {
-                String UpdateQuery = "INSERT INTO `candidat`(`nom`, `prenom`, `date_n`, `lieu_n`, `groupage`, `sexe`, `tel`, `date_inscri`, `type_p`, `adress`) VALUES (?,?,?,?,?,?,?,?,?,?)";
+                String UpdateQuery = "INSERT INTO `candidat`(`nom`, `prenom`, `date_n`, `lieu_n`, `groupage`, `sexe`, `tel`, `date_inscri`, `type_p`, `adress`,`photo`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
                 PreparedStatement ps = ConBD.getConnection().prepareStatement(UpdateQuery);
                 ps.setString(1,nom.getText());
                 ps.setString(2,prenom.getText());
@@ -420,6 +482,13 @@ public class candidat_panel extends javax.swing.JPanel {
                 ps.setString(8, dateFormat.format(date_i.getDate()));
                 ps.setString(9, (String) type_p.getSelectedItem());
                 ps.setString(10,adress.getText());
+                try {
+                    FileInputStream file=new FileInputStream(curent_url);
+                    ps.setBinaryStream(11, file);
+                } catch (FileNotFoundException ex) {
+                    System.err.println(ex);
+                    ps.setString(11,null);
+                }
                 ps.executeUpdate();
                 load_candidat("");
             } catch (SQLException e) {
@@ -443,31 +512,75 @@ public class candidat_panel extends javax.swing.JPanel {
         date_n.setDate(new Date());
         ajouter.setEnabled(true);
         modifer.setEnabled(false);
+        curent_image=new ImageIcon(getClass().getResource(resource));
+        curent_url=curent_image.toString().replace("file:/", "");
+        image.setIcon(curent_image);
+        ajouter.setText("Ajouter");
     }
 
     private boolean check1() {
-        return !(nom.getText().equals("") || prenom.getText().equals("") || lieu.getText().equals("") || adress.getText().equals("") || tel.getText().equals("") || date_i.getDate().equals("") || date_n.getDate().equals(""));
+        return !(nom.getText().equals("") || prenom.getText().equals("") || lieu.getText().equals("") || tel.getText().equals("") || date_i.getDate().equals("") || date_n.getDate().equals(""));
     }
 
     private int check2() {
         try {            
             Statement st = ConBD.getConnection().createStatement();
-            String q="select * from candidat where nom='"+nom.getText()+"%' and prenom='"+prenom.getText()+"%' and date_n='"+dateFormat.format(date_n.getDate())+"' and lieu_n='"+lieu.getText()+"' and groupage='"+group.getSelectedItem()+"' and sexe='"+genr.getSelectedItem()+"' and type_p='"+type_p.getSelectedItem()+"'";
-            System.out.println(q);
+            String q="select * from candidat where nom='"+nom.getText()+"' and prenom='"+prenom.getText()+"' and date_n='"+dateFormat.format(date_n.getDate())+"' and lieu_n='"+lieu.getText()+"' and groupage='"+group.getSelectedItem()+"' and sexe='"+genr.getSelectedItem()+"' and type_p='"+type_p.getSelectedItem()+"'";
             ResultSet rs = st.executeQuery(q);
-            System.out.println("count "+rs.getFetchSize());
-            return rs.getFetchSize();
+            int i=0;
+            while(rs.next())
+            {
+                i++;
+            }
+            return i;
         } catch (SQLException  ex) {
             JOptionPane.showMessageDialog(can_info_pan,"ERREU :"+ex);
+            return -1;
         }   
-        return 0;
     }
 
     private void modifier() {
-       
+        if(check1() && check2()==0){
+            try {
+                String UpdateQuery = "INSERT INTO `candidat`(`nom`, `prenom`, `date_n`, `lieu_n`, `groupage`, `sexe`, `tel`, `date_inscri`, `type_p`, `adress`,`photo`) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+                PreparedStatement ps = ConBD.getConnection().prepareStatement(UpdateQuery);
+                ps.setString(1,nom.getText());
+                ps.setString(2,prenom.getText());
+                ps.setString(3,dateFormat.format(date_n.getDate()));
+                ps.setString(4,lieu.getText());
+                ps.setString(5, (String) group.getSelectedItem());
+                ps.setString(6, (String) genr.getSelectedItem());
+                ps.setString(7,tel.getText());
+                ps.setString(8, dateFormat.format(date_i.getDate()));
+                ps.setString(9, (String) type_p.getSelectedItem());
+                ps.setString(10,adress.getText());
+                ps.executeUpdate();
+                load_candidat("");
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(can_info_pan, e);
+            }    
+        }
+    }
+    private void afficher_info(int i) {
+        ImageIcon newIcon = c.get(i).getphoto();
+        Image img = newIcon.getImage();
+        Image newimg = img.getScaledInstance(image.getWidth(), image.getHeight(),  java.awt.Image.SCALE_AREA_AVERAGING);
+        curent_image = new ImageIcon(newimg);
+        curent_url=curent_image.toString().replace("file:/", "");
+        image.setIcon(curent_image);
+        nom.setText(c.get(i).getNOM());
+        prenom.setText(c.get(i).getPrenom());
+        lieu.setText(c.get(i).getLieu());
+        tel.setText(c.get(i).getTél());
+        adress.setText(c.get(i).getadress());
+        date_i.setDate(c.get(i).getDate_i());
+        date_n.setDate(c.get(i).getDate_n());
+        group.setSelectedItem(c.get(i).getGroupage());
+        genr.setSelectedItem(c.get(i).getgenre());
+        type_p.setSelectedItem(c.get(i).gettype());
     }
 
-    private void remplir() {
+    private void Enregistrer() {
         
     }
 }

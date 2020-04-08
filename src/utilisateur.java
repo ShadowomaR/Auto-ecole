@@ -8,11 +8,11 @@
  *
  * @author SHADOW
  */
-public class utilisateurs {
+public class utilisateur {
     private int id ;
     private String nom,prenom,email,nom_utilitateur,type,pwd;
     private String photo;
-    public utilisateurs(int id,String nom,String prenom,String nom_utilitateur,String email,String type,String pwd,String photo){
+    public utilisateur(int id,String nom,String prenom,String nom_utilitateur,String email,String type,String pwd,String photo){
         this.id=id;
         this.nom=nom;
         this.prenom=prenom;

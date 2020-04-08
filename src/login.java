@@ -3,6 +3,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.swing.JOptionPane;
 
 
@@ -151,7 +153,7 @@ public class login extends javax.swing.JFrame {
             /*if (!user.getText().isEmpty() && !pwd.getText().isEmpty()){                
                 authentification(user.getText(),pwd.getText());
             }else erreurs.setText("Remplisser les donners");*/
-            authentification("user","user");
+            authentification("admin","admin");
         }else erreurs.setText("Connection avec la base échouer");
     }//GEN-LAST:event_jButton2ActionPerformed
 
@@ -206,20 +208,20 @@ public class login extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void authentification(String username, String password) {
-        utilisateurs u=get_user(username,password);
+        utilisateur u=get_user(username,password);
         if(u!=null){
             connect(u);
         }else erreurs.setText("Nom utilisateur ou mot pass incorrect");
     }
-    public utilisateurs get_user(String username, String password){    
-        utilisateurs u=null;
+    public utilisateur get_user(String username, String password){    
+        utilisateur u=null;
         try {            
             Statement st = ConBD.getConnection().createStatement();
             String q="select * from utilisateur where (nom_util='"+username+"' or email='"+username+"') and pw='"+password+"'";            
             ResultSet rs = st.executeQuery(q);                        
             while(rs.next())
             {
-                u = new utilisateurs(rs.getInt("num"),rs.getString("nom"),rs.getString("prenom"),rs.getString("nom_util"),rs.getString("email"),rs.getString("type"),rs.getString("pw"),"");               
+                u = new utilisateur(rs.getInt("num"),rs.getString("nom"),rs.getString("prenom"),rs.getString("nom_util"),rs.getString("email"),rs.getString("type"),rs.getString("pw"),"");               
             }     
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(rootPane,"ERREU :"+ex);
@@ -227,12 +229,14 @@ public class login extends javax.swing.JFrame {
         return u;                 
 }
 
-    private void connect(utilisateurs u) {
+    private void connect(utilisateur u) {
         try { 
-            String Query = "INSERT INTO `connections`(`user`,`etat`) VALUES ("+u.getID()+",1)";
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String Query = "INSERT INTO `connections`(`user`,`etat`,date_c) VALUES ("+u.getID()+",1,?)";
             PreparedStatement ps = ConBD.getConnection().prepareStatement(Query);
+            ps.setString(1,dateFormat.format(new Date()));
             ps.executeUpdate();
-            main_fram f=new main_fram(u);
+            main_fram f=new main_fram(u,1);
             f.setVisible(true);
             this.dispose();
         } catch (SQLException e) {

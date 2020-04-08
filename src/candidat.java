@@ -6,6 +6,7 @@
 
 
 import java.util.Date;
+import javax.swing.ImageIcon;
 
         
 public class candidat {
@@ -13,8 +14,9 @@ public class candidat {
     private int code;
     private String nom,prenom,lieu,groupage,tél,adress,genre ,type,etat;
     private Date date_n,date_i;
+    private ImageIcon photo;
 
-    public candidat(int code, String nom, String prenom , Date date_n , String lieu , String groupage ,String genre, String tél,String adress,Date date_i,String type,String etat)
+    public candidat(int code, String nom, String prenom , Date date_n , String lieu , String groupage ,String genre, String tél,String adress,Date date_i,String type,String etat,ImageIcon photo)
     {
         this.code = code;
         this.nom = nom;
@@ -27,6 +29,8 @@ public class candidat {
         this.adress=adress;
         this.type=type;
         this.genre=genre;
+        this.photo=photo;
+        this.etat=etat;
     }
     public int getCode(){
         return code;
@@ -63,5 +67,8 @@ public class candidat {
     }
     public String getetat (){
         return etat;
+    }
+    public ImageIcon getphoto (){
+        return photo;
     }
 }
