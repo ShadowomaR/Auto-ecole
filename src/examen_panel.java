@@ -30,6 +30,7 @@ public class examen_panel extends javax.swing.JPanel {
     private Map<String,Integer> hm = new HashMap<>();
     private Statement st;
     private ResultSet rs;
+    private PreparedStatement ps;
     private String q,type;
     private int examen_id=0;
     private ArrayList<Integer> exams;
@@ -399,7 +400,7 @@ public class examen_panel extends javax.swing.JPanel {
             Object[] params = {"Observation",a};
             int rep =JOptionPane.showConfirmDialog(tabl1,params,"Ajouter une observation", JOptionPane.OK_CANCEL_OPTION);
             if(rep==0 && !a.getText().isEmpty()){
-                update("obs",a.getText(),c_e.get(tabl1.getSelectedRow()).getCode());
+                update_p("obs",a.getText(),c_e.get(tabl1.getSelectedRow()).getCode());
             }
         } catch (HeadlessException e) {
             System.out.println(e.getMessage());
@@ -459,11 +460,10 @@ public class examen_panel extends javax.swing.JPanel {
     }
     private ArrayList<candidat> get_candidat(String d){
         ArrayList<candidat> c1=new ArrayList<>();
-        try {            
-            st = ConBD.getConnection().createStatement();
+        try {       
             if("".equals(d)) q="select * from candidat where type_p='"+type+"' and code not in(select code from pass where id="+examen_id+") order by etat desc ";
             else q="select * from candidat where type_p='"+type+"' and (nom like '%"+d+"%' or prenom like '%"+d+"%') and code not in(select code from pass where id="+examen_id+") order by etat desc";
-            rs = st.executeQuery(q);
+            rs = request(q);
             candidat b;
             while(rs.next())
             {
@@ -478,9 +478,8 @@ public class examen_panel extends javax.swing.JPanel {
 
     private void load_ingenieurs() {
         try {            
-            st = ConBD.getConnection().createStatement();
             q="SELECT * FROM `ingenieur` order by nom_ing desc";
-            rs = st.executeQuery(q);
+            rs = request(q);
             noms.removeAllItems();
             while(rs.next())
             {
@@ -495,24 +494,16 @@ public class examen_panel extends javax.swing.JPanel {
     private void add_ingenieur(String t_nom, String t_prenom) {
         if(exist_ingenieur(t_nom,t_prenom)!=0) JOptionPane.showMessageDialog(info_pan, "Cette personne exist");
         else{
-            try {
-                String UpdateQuery = "INSERT INTO `ingenieur`(`nom_ing`, `prenom_ing`) VALUES (?,?)";
-                PreparedStatement ps = ConBD.getConnection().prepareStatement(UpdateQuery);
-                ps.setString(1,t_nom);
-                ps.setString(2,t_prenom);
-                ps.executeUpdate();
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
+            q = "INSERT INTO `ingenieur`(`nom_ing`, `prenom_ing`) VALUES ('"+t_nom+"','"+t_prenom+"')";
+            update(q);
             load_ingenieurs();
         }
     }
 
     private int exist_ingenieur(String t_nom, String t_prenom) {
-        try {            
-            st = ConBD.getConnection().createStatement();
+        try {          
             q="SELECT * FROM `ingenieur` where nom_ing='"+t_nom+"' and prenom_ing='"+t_prenom+"'";
-            rs = st.executeQuery(q);
+            rs = request(q);
             return rs.getFetchSize();
         } catch (SQLException  ex) {
             JOptionPane.showMessageDialog(info_pan,"ERREU :"+ex);
@@ -523,27 +514,19 @@ public class examen_panel extends javax.swing.JPanel {
     private void add_exam() {
         if (exist_examen(hm.getOrDefault(noms.getSelectedItem(),0),dateFormat.format(date_e.getDate()), (String) type_p.getSelectedItem())>0) JOptionPane.showMessageDialog(info_pan, "Examen exist");
         else {
-            try {
-                String UpdateQuery = "INSERT INTO `examen`(`id_i`, `date_e`, `type_p`) VALUES (?,?,?)";
-                PreparedStatement ps = ConBD.getConnection().prepareStatement(UpdateQuery);
-                ps.setInt(1,hm.getOrDefault(noms.getSelectedItem(),0));
-                ps.setString(2,dateFormat.format(date_e.getDate()));
-                ps.setString(3, (String) type_p.getSelectedItem());
-                type=(String) type_p.getSelectedItem();
-                ps.executeUpdate();
-                examen_id=exist_examen(hm.getOrDefault(noms.getSelectedItem(),0),dateFormat.format(date_e.getDate()), (String) type_p.getSelectedItem());
-                activate();
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(null, e);
-            }
+            q = "INSERT INTO `examen`(`id_i`, `date_e`, `type_p`) VALUES ("+hm.getOrDefault(noms.getSelectedItem(),0)+",'"+dateFormat.format(date_e.getDate())+"','"+type_p.getSelectedItem()+"')";
+            update(q);
+            type=(String) type_p.getSelectedItem();
+            examen_id=exist_examen(hm.getOrDefault(noms.getSelectedItem(),0),dateFormat.format(date_e.getDate()), (String) type_p.getSelectedItem());
+            activate();
+            
         }
     }
 
     private int exist_examen(int id, String date, String type) {
         try {            
-            st = ConBD.getConnection().createStatement();
             q="SELECT * FROM `examen` WHERE `id_i`="+id+" and `date_e`='"+date+"' and `type_p`='"+type+"' ";
-            rs = st.executeQuery(q);
+            rs = request(q);
             int a=0;
             while(rs.next())
             {
@@ -581,9 +564,8 @@ public class examen_panel extends javax.swing.JPanel {
     private ArrayList<candidat> get_candidat(){
         ArrayList<candidat> c1=new ArrayList<>();
         try {            
-            st = ConBD.getConnection().createStatement();
             q="select * from candidat where code in(select code from pass where id="+examen_id+") order by etat desc";
-            rs = st.executeQuery(q);
+            rs = request(q);
             candidat b;
             while(rs.next())
             {
@@ -598,9 +580,8 @@ public class examen_panel extends javax.swing.JPanel {
 
     private void load_examen() {
         try {            
-            st = ConBD.getConnection().createStatement();
             q="select * from examen,ingenieur where examen.id_i=examen.id_i order by date_e desc";
-            rs = st.executeQuery(q);
+            rs = request(q);
             DefaultTableModel model = (DefaultTableModel)table2.getModel();
             model.setRowCount(0);
             Object[] row = new Object[3];
@@ -620,17 +601,11 @@ public class examen_panel extends javax.swing.JPanel {
 
     private void Suprimer(int in) {
         examen_id=exams.get(in);
-        try {
-                String UpdateQuery = "DELETE FROM `examen` WHERE `id`="+examen_id;
-                PreparedStatement ps = ConBD.getConnection().prepareStatement(UpdateQuery);
-                ps.executeUpdate();
-                load_candidat();
-                load_candidat("");
-                load_examen();
-                vider();
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(table2, e);
-            }
+        q = "DELETE FROM `examen` WHERE `id`="+examen_id;
+        load_candidat();
+        load_candidat("");
+        load_examen();
+        vider();
     }
 
     private void modifier(int id) {
@@ -645,31 +620,17 @@ public class examen_panel extends javax.swing.JPanel {
     }
 
     private void Ajouter(int code, String etat) {
-        try {
-                String UpdateQuery = "INSERT INTO `pass`(`id`, `code`, `type`) VALUES (?,?,?)";
-                PreparedStatement ps = ConBD.getConnection().prepareStatement(UpdateQuery);
-                ps.setInt(1,examen_id);
-                ps.setInt(2,code);
-                ps.setString(3,etat);
-                ps.executeUpdate();
-                load_candidat();
-                load_candidat("");
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(tabl1, e);
-            }
+        q= "INSERT INTO `pass`(`id`, `code`, `type`) VALUES ("+examen_id+","+code+",'"+etat+"')";
+        load_candidat();
+        load_candidat("");
     }
 
     private void Suprimer_c(int code) {
-        try {
-                String UpdateQuery = "DELETE FROM `pass` WHERE `id`="+examen_id+" and code="+code;
-                PreparedStatement ps = ConBD.getConnection().prepareStatement(UpdateQuery);
-                ps.executeUpdate();
-                load_candidat();
-                load_candidat("");
-                load_examen();
-            } catch (SQLException e) {
-                JOptionPane.showMessageDialog(table2, e);
-            }
+        String q = "DELETE FROM `pass` WHERE `id`="+examen_id+" and code="+code;
+        update(q);
+        load_candidat();
+        load_candidat("");
+        load_examen();
     }
 
     private void vider() {
@@ -680,16 +641,28 @@ public class examen_panel extends javax.swing.JPanel {
         type="";
     }
 
-    private void update(String column, String string, int code) {
+    private void update_p(String column, String string, int code) {
+        q = "UPDATE `pass` SET "+column+"='"+string+"' WHERE id="+examen_id+" and code="+code;
+        update(q);
+        load_candidat();
+        load_candidat("");
+        load_examen();
+    }
+    private ResultSet request(String q1){
+        try {            
+            st = ConBD.getConnection().createStatement();
+            return st.executeQuery(q1);
+        } catch (SQLException  ex) {
+            JOptionPane.showMessageDialog(info_pan,"ERREU :"+ex);
+            return null;
+        }   
+    }
+    private void update(String q1){
         try {
-                String UpdateQuery = "UPDATE `pass` SET "+column+"='"+string+"' WHERE id="+examen_id+" and code="+code;
-                PreparedStatement ps = ConBD.getConnection().prepareStatement(UpdateQuery);
+                ps = ConBD.getConnection().prepareStatement(q1);
                 ps.executeUpdate();
-                load_candidat();
-                load_candidat("");
-                load_examen();
             } catch (SQLException e) {
-                JOptionPane.showMessageDialog(table2, e);
+                JOptionPane.showMessageDialog(null, e);
             }
     }
 }
