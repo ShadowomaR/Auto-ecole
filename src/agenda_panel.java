@@ -1,11 +1,5 @@
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
-import java.io.IOException;
-import java.io.InputStream;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,18 +7,8 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -37,7 +21,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author SHADOW
  */
-public class agenda_panel extends javax.swing.JPanel {
+public class agenda_panel extends Gpanl {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     ArrayList<candidat> c;
@@ -50,13 +34,13 @@ public class agenda_panel extends javax.swing.JPanel {
      */
     public agenda_panel() {
         initComponents();
-        load_event(date_picker.getDate());
-        date_picker.getDateEditor().addPropertyChangeListener((PropertyChangeEvent e) -> {
+        date_p.getDateEditor().addPropertyChangeListener((PropertyChangeEvent e) -> {
             if ("date".equals(e.getPropertyName())) {
-                load_event(date_picker.getDate());
-                //JOptionPane.showMessageDialog(date_picker,e.getPropertyName()+ " : " + (Date) e.getNewValue());
+                load_agenda(date_p.getDate());
+                //JOptionPane.showMessageDialog(date_p,e.getPropertyName()+ " : " + (Date) e.getNewValue());
             }
         });
+        load_agenda(date_p.getDate());
         load_candidat("");  
     }
 
@@ -73,8 +57,6 @@ public class agenda_panel extends javax.swing.JPanel {
         Profile = new javax.swing.JMenuItem();
         modifier = new javax.swing.JMenuItem();
         jLabel1 = new javax.swing.JLabel();
-        pan = new javax.swing.JPanel();
-        date_picker = new com.toedter.calendar.JDateChooser();
         jPanel1 = new javax.swing.JPanel();
         dat_s = new com.toedter.calendar.JDateChooser();
         type = new javax.swing.JComboBox<>();
@@ -87,6 +69,25 @@ public class agenda_panel extends javax.swing.JPanel {
         cherch = new javax.swing.JTextField();
         jScrollPane6 = new javax.swing.JScrollPane();
         tabl = new javax.swing.JTable();
+        jPanel3 = new javax.swing.JPanel();
+        date_p = new com.toedter.calendar.JDateChooser();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
+        p10 = new javax.swing.JPanel();
+        p3 = new javax.swing.JPanel();
+        p11 = new javax.swing.JPanel();
+        p1 = new javax.swing.JPanel();
+        p4 = new javax.swing.JPanel();
+        p8 = new javax.swing.JPanel();
+        p2 = new javax.swing.JPanel();
+        p9 = new javax.swing.JPanel();
 
         Profile.setText("Profile");
         Profile.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -108,27 +109,7 @@ public class agenda_panel extends javax.swing.JPanel {
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 760, 30, 10));
 
-        pan.setBackground(new Color(0, 0, 0, 0)
-        );
-
-        javax.swing.GroupLayout panLayout = new javax.swing.GroupLayout(pan);
-        pan.setLayout(panLayout);
-        panLayout.setHorizontalGroup(
-            panLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 1220, Short.MAX_VALUE)
-        );
-        panLayout.setVerticalGroup(
-            panLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 500, Short.MAX_VALUE)
-        );
-
-        add(pan, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 80, 1220, 500));
-
-        date_picker.setDate(new Date());
-        date_picker.setDateFormatString("dd-MMMM-yyyy");
-        date_picker.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
-        add(date_picker, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 30, 190, 28));
-
+        jPanel1.setBackground(new java.awt.Color(244, 243, 243));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         dat_s.setDate(new Date());
@@ -177,9 +158,9 @@ public class agenda_panel extends javax.swing.JPanel {
         jLabel4.setText("Date :");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 30, 40, 30));
 
-        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 620, 1060, 80));
+        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 410, 1060, 80));
 
-        cherch.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
+        cherch.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         cherch.setForeground(new java.awt.Color(0, 0, 51));
         cherch.setToolTipText("");
         cherch.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -187,10 +168,9 @@ public class agenda_panel extends javax.swing.JPanel {
                 cherchKeyReleased(evt);
             }
         });
-        add(cherch, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 720, 520, 40));
+        add(cherch, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 500, 520, 40));
 
         tabl.setAutoCreateRowSorter(true);
-        tabl.setBackground(new java.awt.Color(204, 204, 204));
         tabl.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         tabl.setForeground(new java.awt.Color(0, 0, 51));
         tabl.setModel(new javax.swing.table.DefaultTableModel(
@@ -209,8 +189,8 @@ public class agenda_panel extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
-        tabl.setSelectionBackground(new java.awt.Color(241, 179, 205));
-        tabl.setSelectionForeground(new java.awt.Color(102, 0, 0));
+        tabl.setRowHeight(20);
+        tabl.setSelectionBackground(new java.awt.Color(153, 153, 255));
         tabl.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 tablMousePressed(evt);
@@ -218,7 +198,134 @@ public class agenda_panel extends javax.swing.JPanel {
         });
         jScrollPane6.setViewportView(tabl);
 
-        add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 780, 1290, 410));
+        add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 550, 1320, 410));
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Agenda", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Trebuchet MS", 1, 24), new java.awt.Color(0, 0, 102))); // NOI18N
+        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        date_p.setDate(new Date());
+        date_p.setDateFormatString("d MMMM yyyy");
+        date_p.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jPanel3.add(date_p, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 40, 240, 30));
+
+        jPanel4.setBackground(new java.awt.Color(224, 233, 246));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel5.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel5.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(0, 0, 204));
+        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel5.setText("8 h 00");
+        jLabel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel4.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 162, 30));
+
+        jLabel6.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel6.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 204));
+        jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel6.setText("9 h 00");
+        jLabel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel4.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 0, 162, 30));
+
+        jLabel7.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel7.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel7.setForeground(new java.awt.Color(0, 0, 204));
+        jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel7.setText("10 h 00");
+        jLabel7.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel4.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 0, 162, 30));
+
+        jLabel8.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel8.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(0, 0, 204));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("11 h 00");
+        jLabel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel4.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 0, 162, 30));
+
+        jLabel9.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel9.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 204));
+        jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel9.setText("13 h 00");
+        jLabel9.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 0, 162, 30));
+
+        jLabel10.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel10.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 0, 204));
+        jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel10.setText("14 h 00");
+        jLabel10.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel4.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(800, 0, 162, 30));
+
+        jLabel11.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel11.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 0, 204));
+        jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel11.setText("15 h 00");
+        jLabel11.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel4.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 0, 162, 30));
+
+        jLabel12.setBackground(new java.awt.Color(255, 255, 255));
+        jLabel12.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        jLabel12.setForeground(new java.awt.Color(0, 0, 204));
+        jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel12.setText("16 h 00");
+        jLabel12.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        jPanel4.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(1120, 0, 162, 30));
+
+        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 1282, 30));
+
+        p10.setBackground(new java.awt.Color(255, 255, 255));
+        p10.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        p10.setAutoscrolls(true);
+        p10.setLayout(new javax.swing.BoxLayout(p10, javax.swing.BoxLayout.X_AXIS));
+        jPanel3.add(p10, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 110, 161, 250));
+
+        p3.setBackground(new java.awt.Color(255, 255, 255));
+        p3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        p3.setAutoscrolls(true);
+        p3.setLayout(new javax.swing.BoxLayout(p3, javax.swing.BoxLayout.X_AXIS));
+        jPanel3.add(p3, new org.netbeans.lib.awtextra.AbsoluteConstraints(970, 110, 161, 250));
+
+        p11.setBackground(new java.awt.Color(255, 255, 255));
+        p11.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        p11.setAutoscrolls(true);
+        p11.setLayout(new javax.swing.BoxLayout(p11, javax.swing.BoxLayout.X_AXIS));
+        jPanel3.add(p11, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 110, 161, 250));
+
+        p1.setBackground(new java.awt.Color(255, 255, 255));
+        p1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        p1.setAutoscrolls(true);
+        p1.setLayout(new javax.swing.BoxLayout(p1, javax.swing.BoxLayout.X_AXIS));
+        jPanel3.add(p1, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 110, 161, 250));
+
+        p4.setBackground(new java.awt.Color(255, 255, 255));
+        p4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        p4.setAutoscrolls(true);
+        p4.setLayout(new javax.swing.BoxLayout(p4, javax.swing.BoxLayout.X_AXIS));
+        jPanel3.add(p4, new org.netbeans.lib.awtextra.AbsoluteConstraints(1130, 110, 161, 250));
+
+        p8.setBackground(new java.awt.Color(255, 255, 255));
+        p8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        p8.setAutoscrolls(true);
+        p8.setLayout(new javax.swing.BoxLayout(p8, javax.swing.BoxLayout.X_AXIS));
+        jPanel3.add(p8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 110, 161, 250));
+
+        p2.setBackground(new java.awt.Color(255, 255, 255));
+        p2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        p2.setAutoscrolls(true);
+        p2.setLayout(new javax.swing.BoxLayout(p2, javax.swing.BoxLayout.X_AXIS));
+        jPanel3.add(p2, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 110, 161, 250));
+
+        p9.setBackground(new java.awt.Color(255, 255, 255));
+        p9.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        p9.setAutoscrolls(true);
+        p9.setLayout(new javax.swing.BoxLayout(p9, javax.swing.BoxLayout.X_AXIS));
+        jPanel3.add(p9, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 110, 161, 250));
+
+        add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1300, 380));
     }// </editor-fold>//GEN-END:initComponents
 
     private void ProfileMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ProfileMousePressed
@@ -254,86 +361,42 @@ public class agenda_panel extends javax.swing.JPanel {
     private javax.swing.JMenuItem Profile;
     private javax.swing.JTextField cherch;
     private com.toedter.calendar.JDateChooser dat_s;
-    private com.toedter.calendar.JDateChooser date_picker;
+    private com.toedter.calendar.JDateChooser date_p;
     private javax.swing.JLabel info;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JMenuItem modifier;
-    private javax.swing.JPanel pan;
+    private javax.swing.JPanel p1;
+    private javax.swing.JPanel p10;
+    private javax.swing.JPanel p11;
+    private javax.swing.JPanel p2;
+    private javax.swing.JPanel p3;
+    private javax.swing.JPanel p4;
+    private javax.swing.JPanel p8;
+    private javax.swing.JPanel p9;
     private javax.swing.JTable tabl;
     private javax.swing.JComboBox<String> temp;
     private javax.swing.JComboBox<String> type;
     // End of variables declaration//GEN-END:variables
 
-    
-    private void load_event(Date d) {
-        
-        pan.removeAll();
-        String addDate = dateFormat.format(d);
-        ArrayList<agenda> agendaList  = new ArrayList<>();
-        pan.setLayout(new BoxLayout(pan, BoxLayout.X_AXIS));
-        int temp=8;
-        JLabel l;
-        JPanel b;
-        JButton btn;
-        Font f=new Font("Trebuchet MS", 1, 12);
-        Color transparent=new Color(0, 0, 0, 0);
-        Border bordr=new EmptyBorder(10, 2, 10, 2);       
-        
-        for (int i = 0; i < 9; i++) {
-            b = new JPanel(new BorderLayout(10,10));            
-            if(i!=4){
-                b.setBackground(Color.white);
-                b.setAutoscrolls(true);
-                agendaList = get_agenda(addDate,agendaList,temp+i);
-                if (agendaList!=null ) {                    
-                    DefaultListModel<String> l1 = null;
-                    for(int j=0;j<agendaList.size();j++){                        
-                        l1 = new DefaultListModel<>();  
-                        l1.addElement(agendaList.get(j).getnom()); 
-                    }
-                    if(l1!=null){
-                        JList<String> list = new JList<>(l1);
-                        list.setBounds(100,100, 75,75); 
-                        b.add(list,BorderLayout.CENTER);
-                    }
-                    
-                }                
-                l=new JLabel(Integer.toString(temp+i)+" - "+Integer.toString(temp+i+1));
-                l.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-                l.setBackground(Color.red);
-                l.setFont(f);
-                l.setBorder(bordr);
-                b.add(l,BorderLayout.NORTH);   
-            }else{
-                b.setBackground(transparent);
-            }
-            pan.add(b);
-            pan.add(Box.createHorizontalStrut(10));
-        }
-        pan.revalidate();
-    }
-    private ArrayList<agenda> get_agenda(String d, ArrayList<agenda> a, int par){
-        a.removeAll(a);
-        try {            
-            rs = request("select code_c,nom,prenom,type,tmp from agenda, candidat where code=code_c and jour='"+d+"' and tmp="+par+"");
-            agenda b;
-            while(rs.next())
-            {
-                b=new agenda(rs.getInt("code_c"),rs.getString("nom")+" "+rs.getString("prenom"),rs.getString("type"),rs.getInt("tmp"));
-                a.add(b);
-            }     
-        } catch (SQLException  ex) {
-            JOptionPane.showMessageDialog(pan,"ERREU :"+ex);
-        }   
-        return a;
-    }
+   
+
         private void load_candidat(String string) {
         DefaultTableModel model = (DefaultTableModel)tabl.getModel();
         c=get_candidat(string);
@@ -363,19 +426,9 @@ public class agenda_panel extends javax.swing.JPanel {
             else q="select * from candidat where nom like '%"+d+"%' or prenom like '%"+d+"%' order by date_inscri desc";
             rs = request(q);
             candidat b;
-            InputStream photo ;
-            BufferedImage bfim = null;
             while(rs.next())
             {
-                if(rs.getBinaryStream("photo")!=null){
-                    photo = rs.getBinaryStream("photo");
-                    try {
-                        bfim=ImageIO.read(photo);
-                    } catch (IOException ex) {
-                        System.err.println(ex);
-                    }
-                }
-                b=new candidat(rs.getInt("code"),rs.getString("nom"),rs.getString("prenom"),rs.getDate("date_n"),rs.getString("lieu_n"),rs.getString("groupage"),rs.getString("sexe"),rs.getString("tel"), rs.getString("adress"),rs.getDate("date_inscri"),rs.getString("type_p"),rs.getString("etat"),new ImageIcon(bfim));
+                b=new candidat(rs.getInt("code"),rs.getString("nom"),rs.getString("prenom"),rs.getDate("date_n"),rs.getString("lieu_n"),rs.getString("groupage"),rs.getString("sexe"),rs.getString("tel"), rs.getString("adress"),rs.getDate("date_inscri"),rs.getString("type_p"),rs.getString("etat"),null);
                 c1.add(b);
             }          
         } catch (SQLException  ex) {
@@ -394,8 +447,8 @@ public class agenda_panel extends javax.swing.JPanel {
             update(UpdateQuery);
             load_candidat("");
             clear();
-            JOptionPane.showMessageDialog(pan, "Ajouter");
-            load_event(date_picker.getDate());   
+            JOptionPane.showMessageDialog(null, "Ajouter");
+            load_agenda(date_p.getDate());  
         }
     }
 
@@ -431,6 +484,70 @@ public class agenda_panel extends javax.swing.JPanel {
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(info, e);
             }   
+    }
+
+    private void load_agenda(Date date) {
+
+        p1.removeAll();
+        p2.removeAll();
+        p3.removeAll();
+        p4.removeAll();
+        p8.removeAll();
+        p9.removeAll();
+        p10.removeAll();
+        p11.removeAll();
+        get_agenda2(dateFormat.format(date));
+        p1.revalidate();
+        p1.repaint();
+        p2.revalidate();
+        p2.repaint();
+        p3.revalidate();
+        p3.repaint();
+        p4.revalidate();
+        p4.repaint();
+        p8.revalidate();
+        p8.repaint();
+        p9.revalidate();
+        p9.repaint();
+        p10.revalidate();
+        p10.repaint();
+        p11.revalidate();
+        p11.repaint();
+    }
+    private void add_to_pan(String nom,int tem){
+        switch(tem){
+            case 8:p8.add(new JLabel(nom));
+                   break;
+            case 9:p9.add(new JLabel(nom));
+                   break;
+            case 10:p10.add(new JLabel(nom));
+                   break;   
+            case 11:p11.add(new JLabel(nom));
+                   break;
+            case 13:p1.add(new JLabel(nom));
+                   break;
+            case 14:p2.add(new JLabel(nom));
+                   break;
+            case 15:p3.add(new JLabel(nom));
+                   break;   
+            case 16:p4.add(new JLabel(nom));
+                   break;
+        }
+            
+    }
+
+    private void get_agenda2(String format) {
+        try {            
+            rs = request("select code_c,nom,prenom,type,tmp from agenda, candidat where code=code_c and jour='"+format+"'");
+            //System.out.println("select code_c,nom,prenom,type,tmp from agenda, candidat where code=code_c and jour='"+format+"'");
+            agenda b;
+            while(rs.next())
+            {
+                add_to_pan(rs.getString("nom")+" "+rs.getString("prenom"), rs.getInt("tmp"));
+            }     
+        } catch (SQLException  ex) {
+            JOptionPane.showMessageDialog(null,"ERREU :"+ex);
+        }   
     }
 }
 

@@ -3,6 +3,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.swing.Box;
 import javax.swing.JOptionPane;
 
 /*
@@ -24,6 +25,9 @@ public class main_fram extends javax.swing.JFrame {
      */
     public main_fram(utilisateur u,int n) {
         initComponents();
+        jMenuBar1.add(Box.createGlue());
+        jMenuBar1.add(jMenu5);
+        jMenuBar1.add(jMenu3);
         this.u=u;
         change_panel(n);
     }
@@ -40,27 +44,21 @@ public class main_fram extends javax.swing.JFrame {
         jScrollPane1 = new javax.swing.JScrollPane();
         panel = new javax.swing.JPanel();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu3 = new javax.swing.JMenu();
         agenda = new javax.swing.JMenu();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
+        jMenu4 = new javax.swing.JMenu();
+        jMenu3 = new javax.swing.JMenu();
+        jMenu5 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        panel.setLayout(new java.awt.GridLayout());
+        panel.setLayout(new java.awt.GridLayout(1, 0));
         jScrollPane1.setViewportView(panel);
 
         getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1360, 700));
-
-        jMenu3.setText("Quiter");
-        jMenu3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                jMenu3MousePressed(evt);
-            }
-        });
-        jMenuBar1.add(jMenu3);
 
         agenda.setText("Agenda");
         agenda.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -85,6 +83,30 @@ public class main_fram extends javax.swing.JFrame {
             }
         });
         jMenuBar1.add(jMenu2);
+
+        jMenu4.setText("Parametre");
+        jMenu4.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jMenu4MousePressed(evt);
+            }
+        });
+        jMenuBar1.add(jMenu4);
+
+        jMenu3.setText("X");
+        jMenu3.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jMenu3MousePressed(evt);
+            }
+        });
+        jMenuBar1.add(jMenu3);
+
+        jMenu5.setText("_");
+        jMenu5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                jMenu5MousePressed(evt);
+            }
+        });
+        jMenuBar1.add(jMenu5);
 
         setJMenuBar(jMenuBar1);
 
@@ -114,11 +136,23 @@ public class main_fram extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_jMenu2MousePressed
 
+    private void jMenu4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu4MousePressed
+        main_fram f=new main_fram(u,4);
+        f.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jMenu4MousePressed
+
+    private void jMenu5MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu5MousePressed
+        this.setExtendedState(this.ICONIFIED);
+    }//GEN-LAST:event_jMenu5MousePressed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu agenda;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panel;
@@ -146,6 +180,9 @@ public class main_fram extends javax.swing.JFrame {
                 break;
             case 3:panel.removeAll();
                 panel.add(new examen_panel());
+                break;
+            case 4:panel.removeAll();
+                panel.add(new parametre());
                 break;
        }
     }

@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JOptionPane;
-import javax.swing.JTextArea;
 import javax.swing.table.DefaultTableModel;
 
 /*
@@ -23,17 +22,18 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author SHADOW
  */
-public class examen_panel extends javax.swing.JPanel {
+public class examen_panel extends Gpanl {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private ArrayList<candidat> c,c_e;
-    private Map<String,Integer> hm = new HashMap<>();
+    private Map<String,Integer> hm = new HashMap<>(),catt = new HashMap<>();
     private Statement st;
     private ResultSet rs;
     private PreparedStatement ps;
     private String q,type;
     private int examen_id=0;
     private ArrayList<Integer> exams;
+    private r_examen exm=null;
     
     /**
      * Creates new form NewJPanel
@@ -42,6 +42,7 @@ public class examen_panel extends javax.swing.JPanel {
         initComponents();
         load_ingenieurs();
         load_examen();
+        load_cat();
     }
 
     /**
@@ -57,11 +58,10 @@ public class examen_panel extends javax.swing.JPanel {
         Ajouter = new javax.swing.JMenuItem();
         jPopupMenu2 = new javax.swing.JPopupMenu();
         Suprimer = new javax.swing.JMenuItem();
-        obs = new javax.swing.JMenuItem();
-        res = new javax.swing.JMenuItem();
         jPopupMenu3 = new javax.swing.JPopupMenu();
         Modifier = new javax.swing.JMenuItem();
         Suprime = new javax.swing.JMenuItem();
+        Note = new javax.swing.JMenuItem();
         info_pan = new javax.swing.JPanel();
         add_btn = new javax.swing.JButton();
         date_e = new com.toedter.calendar.JDateChooser();
@@ -106,18 +106,7 @@ public class examen_panel extends javax.swing.JPanel {
         });
         jPopupMenu2.add(Suprimer);
 
-        obs.setText("Observation");
-        obs.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                obsMousePressed(evt);
-            }
-        });
-        jPopupMenu2.add(obs);
-
-        res.setText("Resultat");
-        jPopupMenu2.add(res);
-
-        Modifier.setText("Modifier");
+        Modifier.setText("Modifier la list");
         Modifier.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 ModifierMousePressed(evt);
@@ -132,6 +121,15 @@ public class examen_panel extends javax.swing.JPanel {
             }
         });
         jPopupMenu3.add(Suprime);
+
+        Note.setText("Noter candidat");
+        Note.setToolTipText("");
+        Note.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                NoteMousePressed(evt);
+            }
+        });
+        jPopupMenu3.add(Note);
 
         setBackground(ConBD.color);
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -209,7 +207,6 @@ public class examen_panel extends javax.swing.JPanel {
         add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1320, 760, 30, 10));
 
         tabl.setAutoCreateRowSorter(true);
-        tabl.setBackground(new java.awt.Color(204, 204, 204));
         tabl.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         tabl.setForeground(new java.awt.Color(0, 0, 51));
         tabl.setModel(new javax.swing.table.DefaultTableModel(
@@ -230,8 +227,6 @@ public class examen_panel extends javax.swing.JPanel {
         });
         tabl.setComponentPopupMenu(jPopupMenu1);
         tabl.setRowHeight(20);
-        tabl.setSelectionBackground(new java.awt.Color(204, 204, 255));
-        tabl.setSelectionForeground(new java.awt.Color(0, 0, 51));
         jScrollPane6.setViewportView(tabl);
         if (tabl.getColumnModel().getColumnCount() > 0) {
             tabl.getColumnModel().getColumn(0).setResizable(false);
@@ -246,7 +241,7 @@ public class examen_panel extends javax.swing.JPanel {
         add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 470, 1300, 290));
 
         cherch.setEditable(false);
-        cherch.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
+        cherch.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         cherch.setForeground(new java.awt.Color(0, 0, 51));
         cherch.setToolTipText("");
         cherch.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -257,7 +252,6 @@ public class examen_panel extends javax.swing.JPanel {
         add(cherch, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 420, 520, 40));
 
         tabl1.setAutoCreateRowSorter(true);
-        tabl1.setBackground(new java.awt.Color(204, 204, 204));
         tabl1.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         tabl1.setForeground(new java.awt.Color(0, 0, 51));
         tabl1.setModel(new javax.swing.table.DefaultTableModel(
@@ -278,8 +272,6 @@ public class examen_panel extends javax.swing.JPanel {
         });
         tabl1.setComponentPopupMenu(jPopupMenu2);
         tabl1.setRowHeight(20);
-        tabl1.setSelectionBackground(new java.awt.Color(204, 204, 255));
-        tabl1.setSelectionForeground(new java.awt.Color(0, 0, 51));
         jScrollPane7.setViewportView(tabl1);
         if (tabl1.getColumnModel().getColumnCount() > 0) {
             tabl1.getColumnModel().getColumn(0).setResizable(false);
@@ -299,13 +291,14 @@ public class examen_panel extends javax.swing.JPanel {
         label.setToolTipText("");
         add(label, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 780, 150, 30));
 
-        table2.setFont(new java.awt.Font("Trebuchet MS", 0, 12)); // NOI18N
+        table2.setAutoCreateRowSorter(true);
+        table2.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
         table2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
             new String [] {
-                "Ingenieur", "Date", "Tupe"
+                "Ingenieur", "Date", "Type"
             }
         ) {
             boolean[] canEdit = new boolean [] {
@@ -317,6 +310,7 @@ public class examen_panel extends javax.swing.JPanel {
             }
         });
         table2.setComponentPopupMenu(jPopupMenu3);
+        table2.setRowHeight(20);
         jScrollPane1.setViewportView(table2);
         if (table2.getColumnModel().getColumnCount() > 0) {
             table2.getColumnModel().getColumn(0).setResizable(false);
@@ -326,14 +320,17 @@ public class examen_panel extends javax.swing.JPanel {
 
         add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 30, 720, 270));
 
+        nom.setBackground(new java.awt.Color(255, 255, 255));
         nom.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
         nom.setForeground(new java.awt.Color(0, 0, 102));
         add(nom, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 350, 170, 30));
 
+        date.setBackground(new java.awt.Color(255, 255, 255));
         date.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
         date.setForeground(new java.awt.Color(0, 0, 102));
         add(date, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 350, 170, 30));
 
+        typ.setBackground(new java.awt.Color(255, 255, 255));
         typ.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
         typ.setForeground(new java.awt.Color(0, 0, 102));
         add(typ, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 350, 170, 30));
@@ -366,7 +363,7 @@ public class examen_panel extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void AjouterMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_AjouterMousePressed
-        Ajouter(c.get(tabl.getSelectedRow()).getCode(),c.get(tabl.getSelectedRow()).getetat());
+        if(tabl.getSelectedRow()>-1) Ajouter(c.get(tabl.getSelectedRow()).getCode(),c.get(tabl.getSelectedRow()).getetat());
     }//GEN-LAST:event_AjouterMousePressed
 
     private void add_btnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_add_btnActionPerformed
@@ -379,38 +376,44 @@ public class examen_panel extends javax.swing.JPanel {
     }//GEN-LAST:event_SuprimerActionPerformed
 
     private void SuprimerMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SuprimerMousePressed
-        Suprimer_c(c_e.get(tabl1.getSelectedRow()).getCode());
+        if(tabl1.getSelectedRow()>-1) Suprimer_c(c_e.get(tabl1.getSelectedRow()).getCode());
     }//GEN-LAST:event_SuprimerMousePressed
 
     private void ModifierMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ModifierMousePressed
-        modifier(table2.getSelectedRow());
+        if(table2.getSelectedRow()>-1) modifier(table2.getSelectedRow());
     }//GEN-LAST:event_ModifierMousePressed
 
     private void SuprimeMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SuprimeMousePressed
-        Suprimer(table2.getSelectedRow());
+        if(table2.getSelectedRow()>-1) Suprimer(table2.getSelectedRow());
     }//GEN-LAST:event_SuprimeMousePressed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
-    private void obsMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_obsMousePressed
         try {
-            JTextArea a=new JTextArea(2, 2);
-            Object[] params = {"Observation",a};
-            int rep =JOptionPane.showConfirmDialog(tabl1,params,"Ajouter une observation", JOptionPane.OK_CANCEL_OPTION);
-            if(rep==0 && !a.getText().isEmpty()){
-                update_p("obs",a.getText(),c_e.get(tabl1.getSelectedRow()).getCode());
+            String cat = JOptionPane.showInputDialog(null,"Nom ","");
+            if(cat.isEmpty() ) JOptionPane.showMessageDialog(null, "Invalid");
+            else{
+                update("INSERT INTO `categorie`( `nom`) VALUES (upper('"+cat+"'))");
+                load_cat();
             }
         } catch (HeadlessException e) {
             System.out.println(e.getMessage());
         }
-    }//GEN-LAST:event_obsMousePressed
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void NoteMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_NoteMousePressed
+        if(table2.getSelectedRow()>-1) {
+            if(exm!=null && exm.isVisible()) exm.dispose();
+            examen_id=exams.get(table2.getSelectedRow());
+            exm=new r_examen("Ingenieur :"+table2.getModel().getValueAt(table2.getSelectedRow(), 0).toString()+" Date examen :"+table2.getModel().getValueAt(table2.getSelectedRow(), 1).toString()+" Type examen :"+table2.getModel().getValueAt(table2.getSelectedRow(), 2).toString()+" ", examen_id);
+            exm.setVisible(true);
+        }
+    }//GEN-LAST:event_NoteMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem Ajouter;
     private javax.swing.JMenuItem Modifier;
+    private javax.swing.JMenuItem Note;
     private javax.swing.JMenuItem Suprime;
     private javax.swing.JMenuItem Suprimer;
     private javax.swing.JButton add_btn;
@@ -433,8 +436,6 @@ public class examen_panel extends javax.swing.JPanel {
     private javax.swing.JLabel label;
     private javax.swing.JLabel nom;
     private javax.swing.JComboBox<String> noms;
-    private javax.swing.JMenuItem obs;
-    private javax.swing.JMenuItem res;
     private javax.swing.JTable tabl;
     private javax.swing.JTable tabl1;
     private javax.swing.JTable table2;
@@ -477,9 +478,8 @@ public class examen_panel extends javax.swing.JPanel {
     }
 
     private void load_ingenieurs() {
-        try {            
-            q="SELECT * FROM `ingenieur` order by nom_ing desc";
-            rs = request(q);
+        try {   
+            rs = request("SELECT * FROM `ingenieur` order by nom_ing desc");
             noms.removeAllItems();
             while(rs.next())
             {
@@ -494,16 +494,14 @@ public class examen_panel extends javax.swing.JPanel {
     private void add_ingenieur(String t_nom, String t_prenom) {
         if(exist_ingenieur(t_nom,t_prenom)!=0) JOptionPane.showMessageDialog(info_pan, "Cette personne exist");
         else{
-            q = "INSERT INTO `ingenieur`(`nom_ing`, `prenom_ing`) VALUES ('"+t_nom+"','"+t_prenom+"')";
-            update(q);
+            update("INSERT INTO `ingenieur`(`nom_ing`, `prenom_ing`) VALUES ('"+t_nom+"','"+t_prenom+"')");
             load_ingenieurs();
         }
     }
 
     private int exist_ingenieur(String t_nom, String t_prenom) {
-        try {          
-            q="SELECT * FROM `ingenieur` where nom_ing='"+t_nom+"' and prenom_ing='"+t_prenom+"'";
-            rs = request(q);
+        try {     
+            rs = request("SELECT * FROM `ingenieur` where nom_ing='"+t_nom+"' and prenom_ing='"+t_prenom+"'");
             return rs.getFetchSize();
         } catch (SQLException  ex) {
             JOptionPane.showMessageDialog(info_pan,"ERREU :"+ex);
@@ -519,14 +517,12 @@ public class examen_panel extends javax.swing.JPanel {
             type=(String) type_p.getSelectedItem();
             examen_id=exist_examen(hm.getOrDefault(noms.getSelectedItem(),0),dateFormat.format(date_e.getDate()), (String) type_p.getSelectedItem());
             activate();
-            
         }
     }
 
     private int exist_examen(int id, String date, String type) {
-        try {            
-            q="SELECT * FROM `examen` WHERE `id_i`="+id+" and `date_e`='"+date+"' and `type_p`='"+type+"' ";
-            rs = request(q);
+        try {   
+            rs = request("SELECT * FROM `examen` WHERE `id_i`="+id+" and `date_e`='"+date+"' and `type_p`='"+type+"' ");
             int a=0;
             while(rs.next())
             {
@@ -563,9 +559,8 @@ public class examen_panel extends javax.swing.JPanel {
     }
     private ArrayList<candidat> get_candidat(){
         ArrayList<candidat> c1=new ArrayList<>();
-        try {            
-            q="select * from candidat where code in(select code from pass where id="+examen_id+") order by etat desc";
-            rs = request(q);
+        try {      
+            rs = request("select * from candidat where code in(select code from pass where id="+examen_id+") order by etat desc");
             candidat b;
             while(rs.next())
             {
@@ -579,9 +574,8 @@ public class examen_panel extends javax.swing.JPanel {
     }
 
     private void load_examen() {
-        try {            
-            q="select * from examen,ingenieur where examen.id_i=examen.id_i order by date_e desc";
-            rs = request(q);
+        try {         
+            rs = request("select * from examen,ingenieur where examen.id_i=examen.id_i order by date_e desc");
             DefaultTableModel model = (DefaultTableModel)table2.getModel();
             model.setRowCount(0);
             Object[] row = new Object[3];
@@ -621,12 +615,13 @@ public class examen_panel extends javax.swing.JPanel {
 
     private void Ajouter(int code, String etat) {
         q= "INSERT INTO `pass`(`id`, `code`, `type`) VALUES ("+examen_id+","+code+",'"+etat+"')";
+        update(q);
         load_candidat();
         load_candidat("");
     }
 
     private void Suprimer_c(int code) {
-        String q = "DELETE FROM `pass` WHERE `id`="+examen_id+" and code="+code;
+        q = "DELETE FROM `pass` WHERE `id`="+examen_id+" and code="+code;
         update(q);
         load_candidat();
         load_candidat("");
@@ -641,13 +636,6 @@ public class examen_panel extends javax.swing.JPanel {
         type="";
     }
 
-    private void update_p(String column, String string, int code) {
-        q = "UPDATE `pass` SET "+column+"='"+string+"' WHERE id="+examen_id+" and code="+code;
-        update(q);
-        load_candidat();
-        load_candidat("");
-        load_examen();
-    }
     private ResultSet request(String q1){
         try {            
             st = ConBD.getConnection().createStatement();
@@ -664,6 +652,20 @@ public class examen_panel extends javax.swing.JPanel {
             } catch (SQLException e) {
                 JOptionPane.showMessageDialog(null, e);
             }
+    }
+
+    private void load_cat() {
+        try {      
+            rs = request("SELECT * FROM `categorie` order by nom asc");
+            type_p.removeAllItems();
+            while(rs.next())
+            {
+                catt.put(rs.getString("nom"),rs.getInt("cle"));
+                type_p.addItem(rs.getString("nom"));
+            }  
+        } catch (SQLException  ex) {
+            JOptionPane.showMessageDialog(null,"ERREU :"+ex);
+        }  
     }
 }
 

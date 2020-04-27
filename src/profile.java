@@ -25,10 +25,11 @@ public class profile extends javax.swing.JFrame {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     /**
      * Creates new form profile
+     * @param c
      */
-    public profile() {
+    public profile(candidat c) {
         initComponents();
-        this.c=candidat_panel.can;
+        this.c=c;
         load();
         load_ver();
         load_exam();

@@ -29,13 +29,13 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author SHADOW
  */
-public class candidat_panel extends javax.swing.JPanel {
+public class candidat_panel extends Gpanl {
     
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private ArrayList<candidat> c;
     private ImageIcon curent_image;
     private String curent_url,resource;
-    public static candidat can=null;
+    public candidat can=null;
     private profile pro=null;
     /**
      * Creates new form NewJPanel
@@ -121,7 +121,7 @@ public class candidat_panel extends javax.swing.JPanel {
         jLabel1.setToolTipText("");
         can_info_pan.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 30, 60, 30));
 
-        nom.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        nom.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         nom.setToolTipText("Nom");
         nom.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         nom.setName(""); // NOI18N
@@ -134,7 +134,7 @@ public class candidat_panel extends javax.swing.JPanel {
         jLabel2.setToolTipText("");
         can_info_pan.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 70, 60, 30));
 
-        prenom.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        prenom.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         prenom.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         can_info_pan.add(prenom, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 70, 180, 30));
 
@@ -155,7 +155,7 @@ public class candidat_panel extends javax.swing.JPanel {
         jLabel4.setToolTipText("");
         can_info_pan.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 110, 30));
 
-        lieu.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        lieu.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         lieu.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         can_info_pan.add(lieu, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 70, 180, 30));
 
@@ -228,7 +228,7 @@ public class candidat_panel extends javax.swing.JPanel {
         jLabel14.setToolTipText("");
         can_info_pan.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 110, 60, 30));
 
-        adress.setFont(new java.awt.Font("Trebuchet MS", 1, 12)); // NOI18N
+        adress.setFont(new java.awt.Font("Arial", 1, 12)); // NOI18N
         adress.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         adress.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -315,7 +315,7 @@ public class candidat_panel extends javax.swing.JPanel {
 
         add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 240, 1330, 410));
 
-        cherch.setFont(new java.awt.Font("Trebuchet MS", 1, 14)); // NOI18N
+        cherch.setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         cherch.setForeground(new java.awt.Color(0, 0, 51));
         cherch.setToolTipText("");
         cherch.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -337,12 +337,11 @@ public class candidat_panel extends javax.swing.JPanel {
 
     private void ProfileMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ProfileMousePressed
         
-        if(pro==null || !pro.isVisible()){
-            can=c.get(tabl.getSelectedRow());
-            pro=new profile();
+        if(tabl.getSelectedRow()>-1){
+            if(pro!=null && pro.isVisible()) pro.dispose();
+            pro=new profile(c.get(tabl.getSelectedRow()));
             pro.setVisible(true);
-        }else JOptionPane.showMessageDialog(can_info_pan, "Fermer la fenetre");
-        
+        }
     }//GEN-LAST:event_ProfileMousePressed
 
     private void ajouterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ajouterActionPerformed
